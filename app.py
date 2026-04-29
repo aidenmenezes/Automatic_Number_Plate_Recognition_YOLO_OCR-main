@@ -1,62 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
-import pandas as pd
+from flask import Flask, render_template, request, redirect, url_for, Response, jsonify, send_file
 import os
-from datetime import datetime
-import threading
-import subprocess
-import platform
-import sys
+import database
+import qrcode
+from io import BytesIO
 
 app = Flask(__name__)
 
-# Paths
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-CSV_PATH = os.path.join(BASE_PATH, "known_vehicles.csv")
+TOTAL_SLOTS = 50
 
-def get_data_paths():
-    date_str = datetime.now().strftime("%Y-%m-%d")
-    base_filename = f"detected_plates_{date_str}"
-    excel_path = os.path.join(BASE_PATH, f"{base_filename}.xlsx")
-    csv_path = os.path.join(BASE_PATH, f"{base_filename}.csv")
-    return excel_path, csv_path
-
-# Ensure CSV exists
-def init_csv():
-    if not os.path.exists(CSV_PATH):
-        pd.DataFrame(columns=["plate", "owner_name", "category"]).to_csv(CSV_PATH, index=False)
-
-# Load today's data or return empty DataFrame
-def load_data():
-    excel_path, csv_path = get_data_paths()
-    if os.path.exists(csv_path):
-        return pd.read_csv(csv_path)
-    if os.path.exists(excel_path):
-        return pd.read_excel(excel_path)
-    return pd.DataFrame(columns=["Vehicle Number", "Plate Number", "Owner Name", "Timestamp", "Category"])
-
-# Save new known vehicle to CSV
-def save_to_csv(plate, owner_name, category):
-    plate = plate.upper().strip()
-    normalized_plate = plate.replace(" ", "")
-    df = pd.read_csv(CSV_PATH)
-    df['normalized_plate'] = df['plate'].str.replace(" ", "").str.upper()
-    df = df[df['normalized_plate'] != normalized_plate]
-    df = pd.concat([df, pd.DataFrame([{
-        "plate": plate,
-        "owner_name": owner_name,
-        "category": category
-    }])], ignore_index=True)
-    df.drop(columns=["normalized_plate"], errors="ignore").to_csv(CSV_PATH, index=False)
-
-# Start detection process
 @app.route("/start")
 def start_detection():
+    import subprocess, sys, threading
     def run():
-        if platform.system() == "Windows":
-            subprocess.Popen([sys.executable, "main.py"])
-        else:
-            subprocess.Popen([sys.executable, "main.py"])
-
+        subprocess.Popen([sys.executable, "main.py"])
     threading.Thread(target=run).start()
     return redirect(url_for("index"))
 
@@ -64,53 +20,62 @@ def start_detection():
 def video_feed():
     return redirect("http://127.0.0.1:5001/video_feed")
 
-@app.route("/download")
-def download_excel():
-    excel_path, _ = get_data_paths()
-    if os.path.exists(excel_path):
-        return send_file(excel_path, as_attachment=True)
-    return "Excel file not found", 404
-
-@app.route("/add", methods=["POST"])
-def add_manual_entry():
-    plate = request.form.get("plate")
-    owner_name = request.form.get("owner_name")
-    category = request.form.get("category")
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# --- PRO UPI QR GENERATOR (Fixed) ---
+@app.route("/qr/<float:amount>")
+def get_qr(amount):
+    YOUR_UPI_ID = os.environ.get("MY_UPI_ID") 
+    upi_url = f"upi://pay?pa={YOUR_UPI_ID}&pn=SmartParking&am={amount}&cu=INR"
     
-    df = load_data()
-    normalized_input = plate.replace(" ", "").upper()
-    df['normalized_check'] = df['Vehicle Number'].astype(str).str.replace(" ", "").str.upper()
+    qr = qrcode.QRCode(version=1, box_size=10, border=2)
+    qr.add_data(upi_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    img_io = BytesIO()
+    img.save(img_io, 'PNG')
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/png')
 
-    already_exists = ((df["normalized_check"] == normalized_input) & (df["Owner Name"] == owner_name)).any()
+@app.route("/api/pay/<int:session_id>", methods=["POST"])
+def pay_session(session_id):
+    database.mark_as_paid(session_id)
+    return jsonify({"success": True, "message": "Payment confirmed, gate opening..."})
 
-    if not already_exists:
-        new_row = {
-            "Vehicle Number": plate.upper(),
-            "Plate Number": plate.upper(),
-            "Owner Name": owner_name,
-            "Timestamp": timestamp,
-            "Category": category
-        }
-        df = df.drop(columns=["normalized_check"], errors="ignore")
-        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+@app.route("/api/logs")
+def api_logs():
+    logs = database.get_all_logs()
+    occupied, revenue = database.get_parking_stats()
+    
+    formatted_data = []
+    for log in logs:
+        ui_status = "Parked"
+        if log[4] == 'unpaid': ui_status = "Awaiting Payment"
+        if log[4] == 'paid': ui_status = "Paid"
+
+        formatted_data.append({
+            "plate": log[0],
+            "owner": log[1],
+            "entry": log[2],
+            "exit": log[3] or "---",
+            "status": ui_status,
+            "raw_status": log[4],
+            "amount": f"₹{log[5]}" if log[5] > 0 else "---",
+            "duration": log[6] or "Active",
+            "image": log[7] or "",
+            "id": log[8],
+            "raw_amount": log[5]
+        })
         
-        excel_path, csv_path = get_data_paths()
-        df.to_csv(csv_path, index=False)
-        df.to_excel(excel_path, index=False)
-
-    save_to_csv(plate, owner_name, category)
-    return redirect(url_for("index"))
+    return jsonify({
+        "logs": formatted_data,
+        "occupied": occupied,
+        "available": max(0, TOTAL_SLOTS - occupied),
+        "revenue": f"₹{revenue}"
+    })
 
 @app.route("/")
 def index():
-    init_csv()
-    df = load_data()
-    stats = {
-        "total": len(df),
-        "latest": df["Timestamp"].iloc[-1] if not df.empty else "No data yet",
-    }
-    return render_template("dashboard.html", data=df.to_dict(orient="records"), stats=stats)
+    return render_template("dashboard.html")
 
 if __name__ == "__main__":
-    app.run(debug=True,use_reloader=False)
+    app.run(debug=True, port=5000, use_reloader=False)

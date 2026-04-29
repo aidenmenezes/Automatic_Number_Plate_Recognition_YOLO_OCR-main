@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANPR Dashboard</title>
+    <title>Smart Parking Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script>
+        let currentSessionId = null;
+
         function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tabcontent");
@@ -24,6 +26,96 @@
             }, 10);
             evt.currentTarget.className += " active";
         }
+
+        function showPayment(amount, plate, sessionId, entry, duration) {
+            currentSessionId = sessionId;
+            document.getElementById('modalAmount').innerText = amount;
+            document.getElementById('modalPlate').innerText = plate;
+            document.getElementById('modalEntry').innerText = entry;
+            document.getElementById('modalDuration').innerText = duration;
+            
+            // Fix QR src with cache-buster
+            const cleanAmount = amount.replace('₹', '').trim();
+            document.getElementById('qrImg').src = "/qr/" + cleanAmount + "?t=" + new Date().getTime();
+            document.getElementById('paymentModal').style.display = "flex";
+        }
+
+        async function confirmPayment() {
+            if (!currentSessionId) return;
+            try {
+                const res = await fetch(`/api/pay/${currentSessionId}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    alert("✅ Payment Confirmed! Gate is Opening...");
+                    closeModal();
+                    refreshData();
+                }
+            } catch (err) { alert("Error confirming payment"); }
+        }
+
+        function showSnapshot(url) {
+            document.getElementById('snapshotImg').src = "/static/" + url;
+            document.getElementById('snapshotModal').style.display = "flex";
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = "none");
+            currentSessionId = null;
+        }
+
+        async function refreshData() {
+            try {
+                const response = await fetch('/api/logs');
+                const data = await response.json();
+                
+                document.getElementById('statRevenue').innerText = data.revenue;
+                document.getElementById('statOccupied').innerText = data.occupied;
+                document.getElementById('statAvailable').innerText = data.available;
+
+                const tbody = document.getElementById('logTableBody');
+                let html = '';
+                
+                if (data.logs.length === 0) {
+                    html = '<tr><td colspan="7" class="empty-state">No transactions yet.</td></tr>';
+                } else {
+                    data.logs.forEach(log => {
+                        let statusClass = 'status-parked';
+                        if (log.raw_status === 'unpaid') statusClass = 'status-unpaid';
+                        if (log.raw_status === 'paid') statusClass = 'status-paid';
+
+                        const billClass = log.raw_status === 'paid' ? 'text-success' : '';
+                        
+                        const actionBtn = log.raw_status === 'unpaid' ? 
+                            `<button class="btn btn-sm btn-primary" onclick="showPayment('${log.amount}', '${log.plate}', ${log.id}, '${log.entry}', '${log.duration}')">Pay Bill</button>` : 
+                            (log.raw_status === 'paid' ? '<span class="text-success">✔ Paid</span>' : '---');
+                        
+                        html += `
+                            <tr>
+                                <td>
+                                    <span class="badge badge-plate">${log.plate}</span>
+                                    <div class="owner-hint">${log.owner}</div>
+                                </td>
+                                <td>${log.entry}</td>
+                                <td>${log.exit}</td>
+                                <td><span class="badge badge-status ${statusClass}">${log.status}</span></td>
+                                <td>${log.duration}</td>
+                                <td><strong class="${billClass}">${log.amount}</strong></td>
+                                <td>
+                                    <div class="action-group-sm">
+                                        <button class="btn btn-sm btn-secondary" onclick="showSnapshot('${log.image}')">📸 Photo</button>
+                                        ${actionBtn}
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                tbody.innerHTML = html;
+            } catch (err) { }
+        }
+
+        setInterval(refreshData, 3000);
+        window.onload = refreshData;
     </script>
 </head>
 <body class="dark-theme">
@@ -32,126 +124,117 @@
         <div class="blob blob-2"></div>
     </div>
 
+    <!-- Payment Modal (Enhanced Invoice) -->
+    <div id="paymentModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content glass-panel invoice-modal">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div class="invoice-header">
+                <h2>🧾 Tax Invoice</h2>
+                <p>Smart Parking Solutions Pvt Ltd.</p>
+            </div>
+            
+            <div class="invoice-details">
+                <div class="inv-row"><span>Vehicle:</span><strong id="modalPlate"></strong></div>
+                <div class="inv-row"><span>Entry Time:</span><span id="modalEntry"></span></div>
+                <div class="inv-row"><span>Duration:</span><span id="modalDuration"></span></div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-box">
+                    <img id="qrImg" src="" alt="Payment QR">
+                </div>
+                <p class="qr-hint">Scan to Pay via UPI</p>
+            </div>
+
+            <div class="amount-display">
+                <span>Total Amount Due:</span>
+                <strong id="modalAmount"></strong>
+            </div>
+            
+            <button class="btn btn-primary btn-block" onclick="confirmPayment()">Confirm & Open Gate</button>
+        </div>
+    </div>
+
+    <!-- Snapshot Modal -->
+    <div id="snapshotModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content glass-panel snapshot-modal">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2>📸 Security Snapshot</h2>
+            <div class="snapshot-container"><img id="snapshotImg" src="" alt="Vehicle Snapshot"></div>
+            <button class="btn btn-secondary btn-block" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
     <div class="app-container">
         <header class="topbar glass-panel">
             <div class="brand">
-                <h1>🚗 ANPR Dashboard</h1>
-                <p>Automatic Number Plate Recognition System</p>
+                <h1>🅿️ Smart Parking Pro</h1>
+                <p>Fully Automated Security & Billing</p>
             </div>
             <div class="status-card">
                 <div class="stat-box">
-                    <span>Total Plates</span>
-                    <strong>{{ stats.total }}</strong>
+                    <span>Revenue</span>
+                    <strong id="statRevenue" class="text-success">₹0</strong>
                 </div>
                 <div class="stat-box">
-                    <span>Last Update</span>
-                    <strong>{{ stats.latest }}</strong>
+                    <span>Occupied</span>
+                    <strong id="statOccupied" class="text-warning">0</strong>
+                </div>
+                <div class="stat-box">
+                    <span>Available</span>
+                    <strong id="statAvailable">0</strong>
                 </div>
             </div>
         </header>
 
         <main class="main-content glass-panel">
             <div class="tabs">
-                <button class="tablinks active" onclick="openTab(event, 'Detection')">📷 Detection</button>
-                <button class="tablinks" onclick="openTab(event, 'Records')">📋 Detected Vehicles</button>
-                <button class="tablinks" onclick="openTab(event, 'ManualEntry')">📝 Manual Entry</button>
+                <button class="tablinks active" onclick="openTab(event, 'Detection')">📷 Gate Monitor</button>
+                <button class="tablinks" onclick="openTab(event, 'Records')">📊 Activity Logs</button>
             </div>
 
-            <!-- Tab 1: Detection -->
+            <!-- Tab 1: Monitoring -->
             <div id="Detection" class="tabcontent active" style="display: block;">
                 <div class="content-header">
                     <div>
-                        <h2>Start ANPR Detection</h2>
-                        <p>Streaming directly from your local webcam with YOLO overlay.</p>
+                        <h2>Live AI Surveillance</h2>
+                        <p>Real-time plate recognition and automated billing.</p>
                     </div>
                 </div>
-                
                 <div class="video-container">
                     <img src="{{ url_for('video_feed') }}" alt="Live camera preview">
                 </div>
-                
                 <div class="action-bar">
-                    <a href="{{ url_for('start_detection') }}" class="btn btn-primary pulse">▶️ Start Detection</a>
-                    <p class="warning-text">🛑 To stop detection, manually terminate the background Python process.</p>
+                    <a href="{{ url_for('start_detection') }}" class="btn btn-primary pulse">🚀 Activate Automation</a>
                 </div>
             </div>
 
-            <!-- Tab 2: Records -->
+            <!-- Tab 2: Logs -->
             <div id="Records" class="tabcontent">
                 <div class="content-header">
                     <div>
-                        <h2>Detected Vehicle Records</h2>
-                        <p>Latest recognized plates from the ANPR system.</p>
-                    </div>
-                    <div class="action-group">
-                        <a href="{{ url_for('index') }}" class="btn btn-ghost">🔄 Refresh records</a>
-                        <a href="{{ url_for('download_excel') }}" class="btn btn-secondary">⬇️ Download File</a>
+                        <h2>Parking History</h2>
+                        <p>Review vehicle movements and security photos.</p>
                     </div>
                 </div>
-
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>Vehicle Number</th>
-                                <th>Plate Number</th>
-                                <th>Owner Name</th>
-                                <th>Timestamp</th>
-                                <th>Category</th>
+                                <th>Vehicle</th>
+                                <th>Entry</th>
+                                <th>Exit</th>
+                                <th>Status</th>
+                                <th>Duration</th>
+                                <th>Bill</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% if data %}
-                                {% for row in data %}
-                                    <tr>
-                                        <td>{{ row['Vehicle Number'] }}</td>
-                                        <td><span class="badge badge-plate">{{ row['Plate Number'] }}</span></td>
-                                        <td>{{ row['Owner Name'] }}</td>
-                                        <td>{{ row['Timestamp'] }}</td>
-                                        <td><span class="badge badge-category">{{ row['Category'] }}</span></td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="5" class="empty-state">No detected plates yet.</td>
-                                </tr>
-                            {% endif %}
+                        <tbody id="logTableBody">
+                            <tr><td colspan="7" class="empty-state">Loading logs...</td></tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- Tab 3: Manual Entry -->
-            <div id="ManualEntry" class="tabcontent">
-                <div class="content-header">
-                    <div>
-                        <h2>Add Unknown Vehicle Entry</h2>
-                        <p>Add a missing or corrected plate record manually.</p>
-                    </div>
-                </div>
-                
-                <form action="{{ url_for('add_manual_entry') }}" method="post" class="entry-form">
-                    <div class="form-group">
-                        <label>Plate Number (as detected)</label>
-                        <input type="text" name="plate" placeholder="e.g. ABC1234" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Owner Name</label>
-                        <input type="text" name="owner_name" placeholder="e.g. John Doe" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <div class="custom-select">
-                            <select name="category">
-                                <option value="visitor">Visitor</option>
-                                <option value="teacher">Teacher</option>
-                                <option value="student">Student</option>
-                                <option value="guest">Guest</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Save Entry</button>
-                </form>
             </div>
         </main>
     </div>

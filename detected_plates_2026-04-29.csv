@@ -1,16 +1,12 @@
-Vehicle Number,Plate Number,Owner Name,Timestamp,Category
-{7,{7,Unknown,2026-04-29 22:47:24,visitor
-AR Y 4A 7177,AR Y 4A 7177,Unknown,2026-04-29 22:47:25,visitor
-;4 [ 777,;4 [ 777,Unknown,2026-04-29 22:47:26,visitor
-461117,461117,Unknown,2026-04-29 22:47:27,visitor
-4; 1711,4; 1711,Unknown,2026-04-29 22:47:27,visitor
-AR YK A4 7777,AR YK A4 7777,Unknown,2026-04-29 22:47:28,visitor
-HR YX AA 7777,HR YX AA 7777,Unknown,2026-04-29 22:47:29,visitor
-AR JO 4A 7777,AR JO 4A 7777,Unknown,2026-04-29 22:47:30,visitor
-HR :46 44 1177,HR :46 44 1177,Unknown,2026-04-29 22:47:30,visitor
-HR 98 AA 1777,HR 98 AA 1777,Unknown,2026-04-29 22:47:31,visitor
-"HR 4+ ,A 7777","HR 4+ ,A 7777",Unknown,2026-04-29 22:47:32,visitor
-HR 98 AA 7777,HR 98 AA 7777,Aiden,2026-04-29 22:47:37,teacher
-"'""O% 1.","'""O% 1.",Unknown,2026-04-29 22:48:02,visitor
-;'117,;'117,Unknown,2026-04-29 22:48:37,visitor
-AK,AK,Unknown,2026-04-29 22:48:38,visitor
+Vehicle Number,Plate Number,Owner Name,Timestamp,Category,Status,Duration
+A:1.71,A:1.71,Unknown,2026-04-29 23:01:39,visitor,Entered,Active
+HK JO4A 1777,HK JO4A 1777,Unknown,2026-04-29 23:01:40,visitor,Entered,Active
+HR 98 AA 7777,HR 98 AA 7777,Aiden,2026-04-29 23:01:41,teacher,Entered,Active
+HR Y8 44 7777,HR Y8 44 7777,Unknown,2026-04-29 23:03:26,visitor,Entered,Active
+HR 98 AA 7777,HR 98 AA 7777,Aiden,2026-04-29 23:03:27,teacher,Exited,0:01:46
+HR 98 AA 7777,HR 98 AA 7777,Aiden,2026-04-29 23:03:28,teacher,Entered,Active
+7,7,Unknown,2026-04-29 23:04:24,visitor,Entered,Active
+4,4,Unknown,2026-04-29 23:04:29,visitor,Entered,Active
+P,P,Unknown,2026-04-29 23:06:53,visitor,Entered,Active
+3,3,Unknown,2026-04-29 23:07:03,visitor,Entered,Active
+4,4,Unknown,2026-04-29 23:07:06,visitor,Exited,0:02:36
