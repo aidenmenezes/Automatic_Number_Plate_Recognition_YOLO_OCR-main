@@ -1,0 +1,1082 @@
+================================================================================
+INTERNSHIP DIARY: ARTIFICIAL INTELLIGENCE WITH CLOUD COMPUTING (NASSCOM FUTURE SKILLS)
+PROJECT: AUTOMATIC NUMBER PLATE RECOGNITION (ANPR)
+================================================================================
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+13 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+After successfully completing the AI/ML learning modules of the internship, I have transitioned into the project implementation phase. Today, I participated in an orientation session for our group project on ANPR. I focused on defining the project scope and researched the end-to-end pipeline required for vehicle detection and plate recognition. I also explored the real-world applications of ANPR in smart cities to better understand the project's impact.
+
+Learnings
+Understood the transition from theoretical AI concepts to practical project implementation. Gained knowledge about the technical stages involved in building a real-time ANPR system.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Project Planning, Domain Research, Requirements Analysis
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+14 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I conducted a detailed study of various Object Detection architectures to determine the best fit for our project. I compared YOLOv5 with other models like Faster R-CNN and SSD. I contributed my findings to the group discussion, advocating for YOLOv5 due to its balance of speed and accuracy. I also researched the CSPDarknet53 backbone which forms the core of the YOLOv5 architecture.
+
+Learnings
+Learned to evaluate deep learning architectures based on project constraints. Reinforced my understanding of one-stage detectors in a practical scenario.
+
+Blockers
+—
+
+Links & References
+Links
+https://github.com/ultralytics/yolov5
+
+Skills Applied
+Skills
+Technical Evaluation, Deep Learning Theory
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+15 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I focused on researching Optical Character Recognition (OCR) engines that could be integrated into our pipeline. I compared Tesseract, EasyOCR, and PaddleOCR. I analyzed how sequence modeling and CTC loss are used in deep-learning-based OCR. I shared my recommendation for EasyOCR with the group due to its robustness and ease of implementation in Python.
+
+Learnings
+Gained knowledge about the internal workings of modern OCR engines. Learned how sequence-to-sequence recognition differs from standard classification.
+
+Blockers
+—
+
+Links & References
+Links
+https://github.com/JaidedAI/EasyOCR
+
+Skills Applied
+Skills
+Research, OCR Technology Assessment
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+16 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I spent the day setting up my local development environment and ensuring it was synchronized with the team's configuration. I installed PyTorch, Torchvision, and OpenCV in a dedicated Conda environment. I also worked on resolving dependency version conflicts that appeared during the installation of the vision libraries.
+
+Learnings
+Learned to manage complex AI environments using Conda. Understood the importance of maintaining consistent library versions across a project team.
+
+Blockers
+Dependency conflicts with the latest versions of NumPy and OpenCV.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Environment Management, Troubleshooting
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+17 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I configured NVIDIA CUDA and cuDNN on my system to enable GPU acceleration for model training. I verified the setup by running test scripts in PyTorch. I also implemented a script using OpenCV to capture live video from the webcam, which will serve as the primary data source for our real-time system.
+
+Learnings
+Mastered the configuration of CUDA for deep learning. Learned how to capture and process live video streams efficiently using Python and OpenCV.
+
+Blockers
+Setting up environment variables for CUDA paths on Windows.
+
+Links & References
+Links
+https://developer.nvidia.com/cuda-toolkit
+
+Skills Applied
+Skills
+GPU Computing, OpenCV Implementation
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+18 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I collaborated with the team to initialize our central GitHub repository. I set up the initial project directory structure, ensuring a modular design. I focused on creating a robust .gitignore file to exclude large weight files and virtual environment data, ensuring our repository remains clean and manageable.
+
+Learnings
+Learned collaborative version control practices for large-scale AI projects. Understood the importance of modular project architecture for parallel development.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+GitHub Collaboration, Software Architecture, Git Flow
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+20 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I sourced the "Car Plate Detection" dataset from Kaggle and performed a thorough audit of the images. I focused on analyzing the diversity of the data, specifically looking at plates in different weather conditions and angles. I documented the distribution of the dataset to help the team plan for any necessary data augmentation.
+
+Learnings
+Learned how to evaluate dataset quality for object detection. Understood the impact of data diversity on model generalization.
+
+Blockers
+—
+
+Links & References
+Links
+https://www.kaggle.com/datasets/andrewmvd/car-plate-detection
+
+Skills Applied
+Skills
+Data Auditing, Exploratory Data Analysis (EDA)
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+21 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I developed a Python script to automate the conversion of dataset annotations from PASCAL VOC XML to YOLO format. I implemented logic to normalize bounding box coordinates relative to image size. I verified the script's accuracy by cross-referencing the converted values with the original images.
+
+Learnings
+Mastered coordinate normalization techniques for YOLO models. Gained experience in writing automation scripts for data transformation.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Python Automation, Coordinate Geometry
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+22 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I implemented the image preprocessing pipeline for the project. I focused on resizing images to the standard 640x640 resolution using letterboxing to maintain aspect ratios. I also applied contrast enhancement using CLAHE (Contrast Limited Adaptive Histogram Equalization) to improve plate visibility in challenging lighting conditions.
+
+Learnings
+Learned how image preprocessing directly impacts model convergence. Gained hands-on experience with advanced OpenCV filters.
+
+Blockers
+Loss of spatial information when using naive resizing methods.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+OpenCV, Image Preprocessing
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+23 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I worked on building the data augmentation pipeline using the 'Albumentations' library. I implemented random rotations, brightness adjustments, and Gaussian noise. I focused on ensuring that the bounding box coordinates were correctly transformed along with the images, making our detection model more robust to environmental variations.
+
+Learnings
+Understood how synthetic data augmentation improves model robustness. Learned to use complex augmentation libraries for object detection tasks.
+
+Blockers
+Coordinating label transformations with image augmentations.
+
+Links & References
+Links
+https://albumentations.ai/
+
+Skills Applied
+Skills
+Data Augmentation, Pipeline Development
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+24 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I participated in a manual data audit session with the team. I was responsible for verifying over 150 annotated images to ensure the bounding boxes were accurate. I corrected several mislabeled images and helped identify "noisy" data that could have negatively impacted our training results.
+
+Learnings
+Realized the critical importance of high-quality labels in supervised learning. Learned to identify common labeling errors in object detection datasets.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Quality Assurance, Data Validation
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+25 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I finalized the dataset partitioning into Training, Validation, and Testing sets. I generated the 'data.yaml' file and configured the paths for our custom training loop. I also prepared the training logs to ensure we could monitor the mAP and Loss curves as a group throughout the training process.
+
+Learnings
+Learned the logistics of preparing a custom dataset for YOLO training. Understood the role of YAML configuration in deep learning frameworks.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Dataset Partitioning, Configuration Management
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+27 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I initialized the training process for our YOLOv5 model using transfer learning. While the model was training on the GPU, I focused on designing the logic for the Region of Interest (ROI) extraction module. I reviewed my notes from the learning phase to ensure the cropping logic would be robust to different plate sizes.
+
+Learnings
+Learned to manage time efficiently between training and development tasks. Gained knowledge about the practical application of transfer learning.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Training Monitoring, logic Design
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+28 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I developed the initial inference script to test our trained weights. I wrote code to load the model and run it against static test images. I focused on visualizing the outputs with OpenCV, ensuring that bounding boxes were correctly displayed with their corresponding confidence scores.
+
+Learnings
+Learned to process model outputs for human visualization. Understood how to interpret and tune confidence thresholds for object detection.
+
+Blockers
+Misalignment of boxes on high-resolution images.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Inference Scripting, Visualization
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+29 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I implemented the ROI extraction logic to automatically crop detected license plates from the full frames. I focused on adding a padding buffer to the crops, which I found improved the subsequent OCR results by preventing the edges of the characters from being cut off.
+
+Learnings
+Mastered image cropping techniques using NumPy and OpenCV. Learned how minor adjustments in detection output can significantly help downstream tasks.
+
+Blockers
+Handling crops that fall outside the image boundaries.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+NumPy, Image Manipulation
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+30 Apr 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I worked on optimizing the detection hyperparameters. I experimented with different Non-Max Suppression (NMS) and IoU thresholds. I focused on finding the "sweet spot" that eliminated duplicate detections while ensuring that every actual plate in the frame was identified.
+
+Learnings
+Deepened my understanding of the NMS algorithm and its role in object detection. Learned to perform systematic hyperparameter tuning.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Algorithm Optimization, Tuning
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+01 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I conducted a formal performance evaluation of our model. I generated and analyzed the Confusion Matrix and PR curves. I specifically looked for patterns in false negatives and realized that the model struggled with plates at extreme angles, leading to a plan for targeted data augmentation.
+
+Learnings
+Learned to use evaluation metrics to diagnose model weaknesses. Gained experience in interpreting complex AI performance visualizations.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Model Evaluation, Metric Analysis
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+02 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I focused on model optimization for deployment. I experimented with exporting our PyTorch model to ONNX format. I also tested the impact of half-precision (FP16) inference on the processing speed, noting a significant reduction in latency on compatible hardware with minimal accuracy loss.
+
+Learnings
+Learned about model serialization and optimization for production. Understood the trade-offs involved in using lower-precision arithmetic in AI.
+
+Blockers
+Compatibility issues during ONNX export of certain layers.
+
+Links & References
+Links
+https://onnx.ai/
+
+Skills Applied
+Skills
+Deployment Optimization, Model Export
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+04 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I integrated the EasyOCR engine into our pipeline. I wrote the code to pass cropped plate images to the reader and retrieve the text. I focused on configuring the character whitelist to only include alphanumeric characters, which improved both the recognition speed and accuracy.
+
+Learnings
+Learned how to integrate external deep learning libraries into a custom pipeline. Gained experience in optimizing OCR engines for specific character sets.
+
+Blockers
+Slow processing speed of OCR compared to the detection stage.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Library Integration, OCR Optimization
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+05 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I experimented with PaddleOCR as an alternative to EasyOCR. I benchmarked both engines on a set of test crops to compare their performance. I focused on evaluating their accuracy on distorted or low-resolution plates, which helped me understand the strengths and weaknesses of different STR architectures.
+
+Learnings
+Learned to perform comparative analysis of AI models. Gained knowledge of the PaddlePaddle framework and its OCR capabilities.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Benchmarking, Comparative Research
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+06 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I developed the post-processing logic for the OCR outputs. I used Regular Expressions (Regex) to validate plate formats and implemented a character correction algorithm to fix common OCR errors, such as misidentifying '5' as 'S'. This logic significantly improved the overall system reliability.
+
+Learnings
+Mastered the application of Regex for data validation in AI pipelines. Learned how rule-based post-processing can complement deep learning models.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Regex, Post-processing Logic
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+07 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I focused on image enhancement specifically for the OCR stage. I implemented filters like Otsu's Thresholding and Adaptive Blur to sharpen character edges in the crops. I found that these preprocessing steps significantly boosted the OCR confidence scores for blurry plate images.
+
+Learnings
+Learned the importance of specialized preprocessing for text recognition. Gained hands-on experience with morphological operations in OpenCV.
+
+Blockers
+Over-sharpening leading to broken character silhouettes.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Advanced Filtering, Pre-OCR Enhancement
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+08 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I implemented perspective correction (de-skewing) for plates captured at an angle. I used OpenCV to calculate the homography matrix and warp the plate image into a flat frontal view. I verified that this geometric rectification made the characters much clearer for the OCR engine.
+
+Learnings
+Learned the mathematics of perspective transformation in computer vision. Understood how to rectify geometric distortions for better recognition results.
+
+Blockers
+Accurately detecting the four corners of tilted plates.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Geometric Transforms, Image Rectification
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+09 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I developed a spatial sorting algorithm to handle two-line license plates. I focused on logic that groups characters by their vertical positions to separate lines and then sorts them horizontally. This ensured that the plate text was extracted in the correct human-readable order.
+
+Learnings
+Learned to solve complex spatial ordering problems in computer vision. Gained experience in developing custom algorithms for non-linear data.
+
+Blockers
+Ambiguity in row separation for plates with significant tilt.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Algorithm Development, Spatial Logic
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+11 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I built the data logging and persistence system. I implemented logic to save detection results, recognized text, and timestamps into a CSV file. I focused on ensuring that the file writing process was efficient and didn't introduce latency into the real-time processing loop.
+
+Learnings
+Learned how to implement robust data logging for AI systems. Gained experience in managing file I/O within high-throughput applications.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Python File I/O, Data Persistence
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+12 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I developed the vehicle authorization module. I created a lookup system using a "Whitelist" of known license plates. I focused on implementing the logic that flags unauthorized vehicles, allowing the system to be used for secure access control applications.
+
+Learnings
+Learned to build rule-based security logic on top of AI models. Understood the requirements for deploying AI in sensitive access control environments.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Business Logic, Security Systems
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+13 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I integrated the live video stream into our system. I optimized the main loop for real-time performance and implemented frame-skipping logic to maintain a high FPS on the dashboard. I focused on ensuring that the detection and OCR stages were synchronized with the incoming video frames.
+
+Learnings
+Learned about synchronization and latency in real-time video processing. Mastered the integration of high-speed data streams into AI pipelines.
+
+Blockers
+Processing lag during high-resolution stream input.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Real-time Integration, Performance Optimization
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+14 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I developed the alert and notification system. I implemented logic to visually flag unauthorized plates on the system dashboard. I also focused on "debouncing" the detections to ensure that the same vehicle wouldn't trigger multiple redundant alerts in a short period.
+
+Learnings
+Learned about event handling and alert systems in Python. Understood how to tune temporal parameters for real-world reliability.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Event-driven Logic, Parameter Tuning
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+15 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I began building the web-based dashboard using the Flask framework. I focused on defining the backend routes and implementing the video streaming generator. I researched how to use 'multipart/x-mixed-replace' to stream JPEG frames from my AI processing loop directly to the web browser.
+
+Learnings
+Learned the fundamentals of building web interfaces for AI projects. Understood how video streaming protocols work over HTTP.
+
+Blockers
+Difficulty in managing the stream generator within the Flask app.
+
+Links & References
+Links
+https://flask.palletsprojects.com/
+
+Skills Applied
+Skills
+Flask Development, Backend Routing
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+16 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I worked on the frontend design of our dashboard. I used HTML and CSS to create a clean layout for the video feed and the results table. I implemented dynamic updates using AJAX to ensure that the latest detection results were displayed without the need for a full page refresh.
+
+Learnings
+Learned to create responsive and dynamic web interfaces. Gained experience in using JavaScript for real-time data visualization.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+UI/UX Design, AJAX Integration
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+18 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I focused on the final integration of the project modules. I merged my work on the detection and OCR modules with the web dashboard. I spent the day performing comprehensive integration testing to ensure that data flowed correctly between the AI backend and the web frontend.
+
+Learnings
+Learned the complexities of full-stack AI system integration. Gained experience in debugging multi-threaded communication between modules.
+
+Blockers
+Inconsistent data formats between the AI logic and the Flask API.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Systems Integration, Debugging
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+19 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I conducted continuous stress testing of the entire system. I monitored resource usage (CPU, RAM, GPU) during long processing runs. I identified and fixed a memory leak in the image cropping function, which was critical for ensuring the system's long-term stability in a production environment.
+
+Learnings
+Learned to use profiling tools to monitor system health. Understood the importance of resource management in long-running AI applications.
+
+Blockers
+High memory consumption over extended periods.
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Stress Testing, Memory Management
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+20 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I focused on implementing comprehensive error handling throughout the application. I added 'try-except' blocks and validation checks to handle edge cases like camera disconnects or empty OCR outputs. This defensive programming approach ensured the system remained stable during unexpected failures.
+
+Learnings
+Understood the importance of robustness in real-world AI applications. Learned to implement defensive programming strategies in Python.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Error Handling, Robustness Testing
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+21 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I compiled the final performance benchmarks for our project. I summarized our findings on detection and OCR accuracy. I focused on creating clear visualizations of our results for the final report, ensuring that the project's technical achievements were well-documented.
+
+Learnings
+Learned how to present complex AI results in a professional format. Gained experience in technical benchmarking and documentation.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Technical Reporting, Data Visualization
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+22 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I updated the project documentation and the final README file. I focused on writing clear, step-by-step installation and usage instructions. I also added architectural diagrams and sample screenshots to the repository to ensure it was professional and ready for handover.
+
+Learnings
+Learned the importance of high-quality documentation for project handover. Understood how to communicate complex technical details to future developers.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Technical Communication, Documentation
+
+--------------------------------------------------------------------------------
+
+Internship Diary Entry Details
+Internship
+Artificial Intelligence with Cloud Computing in Partnership with Nasscom Future Skills
+
+Date
+23 May 2026
+
+Hours Worked
+8 hrs
+
+Activity
+Work Description
+I conducted the final project presentation and live demonstration. I explained my contributions to the detection and OCR pipeline and showed the system processing a live feed. I summarized our key technical achievements and discussed potential future improvements with our mentors.
+
+Learnings
+Improved my ability to present complex technical projects to a professional audience. Learned how to effectively demonstrate a working AI system under pressure.
+
+Blockers
+—
+
+Links & References
+Links
+—
+
+Skills Applied
+Skills
+Presentation, Technical Handover

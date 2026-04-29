@@ -1,0 +1,17 @@
+tensorflow
+matplotlib
+torch
+pandas
+seaborn
+opencv-python
+Flask
+onnxruntime
+easyocr
+torchvision
+requests
+psutil
+numpy
+scipy
+streamlit
+openpyxl
+tqdm
