@@ -6,6 +6,9 @@ from io import BytesIO
 
 app = Flask(__name__)
 
+# Tracks which session is currently displayed on the mobile kiosk
+_active_kiosk_session = {"session_id": None}
+
 TOTAL_SLOTS = 50
 
 @app.route("/start")
@@ -20,9 +23,10 @@ def start_detection():
 def video_feed():
     return redirect("http://127.0.0.1:5001/video_feed")
 
-# --- PRO UPI QR GENERATOR (Fixed) ---
-@app.route("/qr/<float:amount>")
+# --- PRO UPI QR GENERATOR ---
+@app.route("/qr/<path:amount>")
 def get_qr(amount):
+    amount = float(amount)
     YOUR_UPI_ID = os.environ.get("MY_UPI_ID") 
     upi_url = f"upi://pay?pa={YOUR_UPI_ID}&pn=SmartParking&am={amount}&cu=INR"
     
@@ -39,7 +43,38 @@ def get_qr(amount):
 @app.route("/api/pay/<int:session_id>", methods=["POST"])
 def pay_session(session_id):
     database.mark_as_paid(session_id)
+    # Clear kiosk if this session was active
+    if _active_kiosk_session["session_id"] == session_id:
+        _active_kiosk_session["session_id"] = None
     return jsonify({"success": True, "message": "Payment confirmed, gate opening..."})
+
+# --- Mobile Kiosk: set / get active session ---
+@app.route("/api/active_session", methods=["GET"])
+def get_active_session():
+    """Returns the latest unpaid session for the mobile kiosk to display."""
+    logs = database.get_all_logs()
+    for log in logs:
+        plate, owner, entry, exit_t, status, amount, duration, image, sid = log
+        if status == 'unpaid':
+            YOUR_UPI_ID = os.environ.get("MY_UPI_ID", "yourupi@upi")
+            upi_url = f"upi://pay?pa={YOUR_UPI_ID}&pn=SmartParking&am={amount}&cu=INR"
+            return jsonify({
+                "found": True,
+                "session_id": sid,
+                "plate": plate,
+                "owner": owner or "Guest",
+                "entry": entry,
+                "exit": exit_t or "---",
+                "duration": duration or "---",
+                "amount": amount,
+                "upi_url": upi_url
+            })
+    return jsonify({"found": False})
+
+@app.route("/kiosk")
+def kiosk():
+    """Mobile kiosk page — displays receipt + QR for the current unpaid session."""
+    return render_template("kiosk.html")
 
 @app.route("/api/logs")
 def api_logs():
@@ -78,4 +113,4 @@ def index():
     return render_template("dashboard.html")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000, use_reloader=False)
+    app.run(host="0.0.0.0", debug=True, port=5000, use_reloader=False)

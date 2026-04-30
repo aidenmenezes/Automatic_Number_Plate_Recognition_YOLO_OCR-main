@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Parking – Payment Kiosk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #0a0e1a;
+            --surface: #111827;
+            --border:  rgba(255,255,255,0.09);
+            --accent:  #6c63ff;
+            --accent2: #a78bfa;
+            --green:   #10b981;
+            --green-d: rgba(16,185,129,0.15);
+            --yellow:  #f59e0b;
+            --text:    #f1f5f9;
+            --muted:   #94a3b8;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;           /* NO scroll ever */
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 10%, rgba(108,99,255,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 90%, rgba(167,139,250,0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ──────────────────────────────────────
+           SCREEN SYSTEM
+        ────────────────────────────────────── */
+        .screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: env(safe-area-inset-top, 12px) 12px env(safe-area-inset-bottom, 12px);
+        }
+        .screen.visible { display: flex; }
+
+        /* ──────────────────────────────────────
+           IDLE SCREEN
+        ────────────────────────────────────── */
+        #screen-idle { gap: 16px; text-align: center; }
+
+        .idle-logo {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 38px;
+            box-shadow: 0 8px 32px rgba(108,99,255,0.35);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+        .idle-title {
+            font-size: clamp(22px, 6vw, 28px);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .idle-sub { font-size: 13px; color: var(--muted); max-width: 260px; line-height: 1.5; }
+
+        .live-label {
+            display: inline-flex; align-items: center; gap: 7px;
+            font-size: 12px; color: var(--green); font-weight: 600;
+            background: var(--green-d); padding: 5px 14px;
+            border-radius: 99px; border: 1px solid rgba(16,185,129,0.25);
+        }
+        .pulse-ring {
+            width: 9px; height: 9px; border-radius: 50%; background: var(--green);
+            box-shadow: 0 0 0 0 rgba(16,185,129,0.6);
+            animation: pulse-a 1.8s infinite;
+        }
+        @keyframes pulse-a {
+            0%  { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(16,185,129,0); }
+            100%{ box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+        }
+        .dots { display: flex; gap: 5px; }
+        .dots span {
+            width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+            animation: dot-b 1.2s infinite;
+        }
+        .dots span:nth-child(2){animation-delay:.2s}
+        .dots span:nth-child(3){animation-delay:.4s}
+        @keyframes dot-b { 0%,80%,100%{transform:scale(.8);opacity:.5} 40%{transform:scale(1.2);opacity:1} }
+
+        /* ──────────────────────────────────────
+           RECEIPT SCREEN — fits in 100dvh
+        ────────────────────────────────────── */
+        #screen-receipt {
+            justify-content: flex-start;
+            padding-top: max(env(safe-area-inset-top, 8px), 8px);
+            padding-bottom: max(env(safe-area-inset-bottom, 8px), 8px);
+            gap: 0;
+        }
+
+        .receipt-card {
+            width: 100%;
+            max-width: 400px;
+            height: 100dvh;               /* full viewport height */
+            max-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0;             /* edge-to-edge on mobile */
+            overflow: hidden;
+            position: fixed;
+            inset: 0;
+            animation: slide-up .45s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes slide-up {
+            from { opacity:0; transform:translateY(30px) scale(.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+
+        /* ── header ── */
+        .r-header {
+            background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+            padding: clamp(8px,2vh,14px) 16px clamp(6px,1.5vh,10px);
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .r-header .company { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: .75; }
+        .r-header h1 { font-size: clamp(16px,4vw,20px); font-weight: 800; margin: 2px 0 1px; }
+        .r-header .inv-id { font-size: 10px; opacity: .6; }
+
+        /* zig-zag */
+        .zigzag {
+            height: 10px; background: var(--surface); flex-shrink: 0; position: relative;
+        }
+        .zigzag::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:10px;
+            background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+            clip-path: polygon(0 0,5% 100%,10% 0,15% 100%,20% 0,25% 100%,30% 0,35% 100%,40% 0,45% 100%,50% 0,55% 100%,60% 0,65% 100%,70% 0,75% 100%,80% 0,85% 100%,90% 0,95% 100%,100% 0);
+        }
+
+        /* ── body (fills remaining space) ── */
+        .r-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: clamp(8px,1.8vh,14px) 14px;
+            gap: clamp(6px,1.5vh,10px);
+            overflow: hidden;            /* never scroll */
+            min-height: 0;
+        }
+
+        /* plate */
+        .plate-badge {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(108,99,255,0.1);
+            border: 2px dashed rgba(108,99,255,0.3);
+            border-radius: 10px;
+            padding: clamp(8px,1.5vh,12px) 14px;
+            flex-shrink: 0;
+        }
+        .plate-icon { font-size: 20px; }
+        .plate-text {
+            font-size: clamp(18px,5vw,24px); font-weight: 800;
+            letter-spacing: 3px; color: var(--accent2);
+            font-family: 'Courier New', monospace;
+        }
+        .owner-name { font-size: 11px; color: var(--muted); }
+
+        /* detail rows */
+        .detail-grid { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: clamp(5px,1vh,8px) 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .detail-row .lbl { font-size: 11px; color: var(--muted); }
+        .detail-row .val { font-size: 12px; font-weight: 600; }
+
+        /* amount */
+        .amount-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: clamp(8px,1.5vh,12px) 14px;
+            background: linear-gradient(135deg, rgba(16,185,129,.14), rgba(16,185,129,.07));
+            border: 1px solid rgba(16,185,129,.3);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .amount-lbl { font-size: 12px; color: var(--green); font-weight: 600; }
+        .amount-val { font-size: clamp(22px,6vw,28px); font-weight: 800; color: var(--green); }
+
+        /* QR — fills remaining flex space, centered */
+        .qr-section {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            position: relative;
+        }
+        .qr-section img {
+            /* fills available space but never overflows */
+            width: min(100%, 100%);
+            height: 100%;
+            max-height: calc(100% - 42px);   /* leave room for labels */
+            object-fit: contain;
+            display: block;
+            border-radius: 6px;
+        }
+        .qr-label  { font-size: 11px; color: #333; font-weight: 700; letter-spacing:.5px; flex-shrink:0; }
+        .upi-apps  { display: flex; gap: 6px; flex-shrink: 0; }
+        .upi-app   { font-size: 9px; color: #666; background: #f1f5f9; padding: 3px 8px; border-radius: 99px; }
+        .scan-pill {
+            position: absolute; top: -11px; right: 12px;
+            background: var(--accent); color: #fff;
+            font-size: 9px; font-weight: 700;
+            padding: 3px 10px; border-radius: 99px; letter-spacing: 1px;
+        }
+
+        /* footer strip */
+        .r-footer {
+            flex-shrink: 0;
+            text-align: center;
+            padding: clamp(5px,1vh,8px) 14px max(env(safe-area-inset-bottom,5px),5px);
+            border-top: 1px solid var(--border);
+            font-size: 9px; color: var(--muted); line-height: 1.5;
+        }
+
+        /* ──────────────────────────────────────
+           SUCCESS SCREEN
+        ────────────────────────────────────── */
+        #screen-success { gap: 16px; text-align: center; }
+        .success-icon {
+            width: 88px; height: 88px;
+            background: var(--green-d);
+            border: 2px solid rgba(16,185,129,.4);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 44px;
+            animation: pop .5s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes pop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+        .success-title { font-size: 26px; font-weight: 800; color: var(--green); }
+        .success-sub   { font-size: 14px; color: var(--muted); max-width: 250px; line-height: 1.5; }
+        .gate-anim {
+            font-size: 12px; color: var(--green);
+            background: var(--green-d); padding: 7px 18px; border-radius: 99px;
+            animation: blink 1.2s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+    </style>
+</head>
+<body>
+
+<!-- IDLE -->
+<div id="screen-idle" class="screen visible">
+    <div class="idle-logo">🅿️</div>
+    <h2 class="idle-title">Payment Kiosk</h2>
+    <p class="idle-sub">Drive to the exit gate. Your bill appears here automatically.</p>
+    <div class="live-label"><span class="pulse-ring"></span> Monitoring Gate…</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- RECEIPT -->
+<div id="screen-receipt" class="screen">
+    <div class="receipt-card">
+
+        <div class="r-header">
+            <div class="company">Smart Parking Solutions</div>
+            <h1>🧾 Parking Invoice</h1>
+            <div class="inv-id" id="receiptId"></div>
+        </div>
+
+        <div class="zigzag"></div>
+
+        <div class="r-body">
+
+            <!-- Plate -->
+            <div class="plate-badge">
+                <div class="plate-icon">🚗</div>
+                <div>
+                    <div class="plate-text" id="kPlate">––––</div>
+                    <div class="owner-name" id="kOwner"></div>
+                </div>
+            </div>
+
+            <!-- Details -->
+            <div class="detail-grid">
+                <div class="detail-row">
+                    <span class="lbl">📅 Entry</span>
+                    <span class="val" id="kEntry">––</span>
+                </div>
+                <div class="detail-row">
+                    <span class="lbl">🚪 Exit</span>
+                    <span class="val" id="kExit">––</span>
+                </div>
+                <div class="detail-row">
+                    <span class="lbl">⏱ Duration</span>
+                    <span class="val" id="kDuration">––</span>
+                </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="amount-row">
+                <span class="amount-lbl">💰 Total Due</span>
+                <span class="amount-val" id="kAmount">₹0</span>
+            </div>
+
+            <!-- QR — expands to fill all remaining space -->
+            <div class="qr-section">
+                <span class="scan-pill">📱 SCAN TO PAY</span>
+                <img id="kQr" src="" alt="UPI QR">
+                <div class="qr-label">Scan with any UPI App</div>
+                <div class="upi-apps">
+                    <span class="upi-app">GPay</span>
+                    <span class="upi-app">PhonePe</span>
+                    <span class="upi-app">Paytm</span>
+                    <span class="upi-app">BHIM</span>
+                </div>
+            </div>
+
+        </div><!-- /r-body -->
+
+        <div class="r-footer">
+            Smart Parking Solutions Pvt. Ltd. &nbsp;|&nbsp; GST: 27AABCU9603R1ZX
+        </div>
+
+    </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="screen-success" class="screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Payment Received!</div>
+    <p class="success-sub">Thank you! Your vehicle may now exit. Have a safe journey.</p>
+    <div class="gate-anim">🚧 Gate Opening…</div>
+</div>
+
+<script>
+    let currentSessionId = null;
+
+    function showScreen(name) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+        document.getElementById('screen-' + name).classList.add('visible');
+    }
+
+    function renderReceipt(data) {
+        document.getElementById('kPlate').textContent    = data.plate;
+        document.getElementById('kOwner').textContent    = data.owner;
+        document.getElementById('kEntry').textContent    = data.entry;
+        document.getElementById('kExit').textContent     = data.exit;
+        document.getElementById('kDuration').textContent = data.duration;
+        document.getElementById('kAmount').textContent   = '₹' + parseFloat(data.amount).toFixed(2);
+        document.getElementById('receiptId').textContent =
+            'Invoice #' + data.session_id + ' · ' + new Date().toLocaleDateString('en-IN');
+
+        // Derive amount from UPI URL for QR endpoint
+        const match = data.upi_url.match(/am=([^&]+)/);
+        const amt   = match ? match[1] : data.amount;
+        document.getElementById('kQr').src = '/qr/' + amt + '?t=' + Date.now();
+    }
+
+    async function pollSession() {
+        try {
+            const res  = await fetch('/api/active_session');
+            const data = await res.json();
+
+            if (data.found) {
+                if (data.session_id !== currentSessionId) {
+                    currentSessionId = data.session_id;
+                    renderReceipt(data);
+                    showScreen('receipt');
+                }
+            } else {
+                if (currentSessionId !== null) {
+                    // Just got paid
+                    currentSessionId = null;
+                    showScreen('success');
+                    setTimeout(() => showScreen('idle'), 6000);
+                } else {
+                    showScreen('idle');
+                }
+            }
+        } catch (e) { /* silent retry */ }
+    }
+
+    pollSession();
+    setInterval(pollSession, 2500);
+</script>
+</body>
+</html>
