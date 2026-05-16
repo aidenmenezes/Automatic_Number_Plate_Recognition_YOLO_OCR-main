@@ -41,6 +41,34 @@ Clone repo and install requirements.txt in a Python>=3.7.0 environment.
     cd Automatic-number-plate-recognition-YOLO-OCR
     pip install -r requirements.txt  # install
 
+### System dependencies
+
+This project uses Tesseract OCR via the Python wrapper `pytesseract`. The `pytesseract` package is included in `requirements.txt`, but you must also install the Tesseract executable on the OS.
+
+Windows (recommended):
+
+```powershell
+# If you have Chocolatey
+choco install tesseract -y
+
+# Or download and run the official installer from the Tesseract project (choose the Windows installer)
+```
+
+macOS:
+
+```bash
+brew install tesseract
+```
+
+Ubuntu / Debian:
+
+```bash
+sudo apt update
+sudo apt install -y tesseract-ocr
+```
+
+Optional GPU acceleration: install a PyTorch wheel that matches the machine CUDA version (see https://pytorch.org/) and ensure NVIDIA drivers + cuDNN are installed. Without GPU, the project will run on CPU but slower.
+
 ## Usage
 
 After the req libraries are installed, you can run the project by main.py.

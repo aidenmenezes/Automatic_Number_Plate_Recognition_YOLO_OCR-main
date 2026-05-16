@@ -104,11 +104,7 @@ def inference_loop():
 
                         owner_name, category = lookup_owner_info(normalized_plate)
                         
-                        conn = database.sqlite3.connect(database.DB_NAME)
-                        cursor = conn.cursor()
-                        cursor.execute("SELECT id FROM sessions WHERE plate = ? AND status = 'parked'", (normalized_plate,))
-                        is_parked = cursor.fetchone()
-                        conn.close()
+                        is_parked = database.is_vehicle_parked(normalized_plate)
 
                         if not is_parked:
                             database.log_entry(normalized_plate, owner_name, category, web_path)
