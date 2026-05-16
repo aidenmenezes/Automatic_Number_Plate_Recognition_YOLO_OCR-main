@@ -114,8 +114,10 @@
         setInterval(refreshData, 3000);
         window.onload = function() {
             refreshData();
-            // Build kiosk URL dynamically from window.location
-            const kioskUrl = window.location.origin + '/kiosk';
+            // Build kiosk URL dynamically using the local IP passed from Python
+            const localIp = "{{ local_ip }}";
+            const port = window.location.port ? ':' + window.location.port : '';
+            const kioskUrl = `http://${localIp}${port}/kiosk`;
             document.getElementById('kioskUrl').textContent = kioskUrl;
             document.getElementById('kioskLink').href = kioskUrl;
         };

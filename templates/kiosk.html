@@ -329,7 +329,7 @@
             </div>
 
             <!-- QR — expands to fill all remaining space -->
-            <div class="qr-section">
+            <div class="qr-section" onclick="simulatePayment()" style="cursor: pointer;" title="Demo: Click to simulate payment">
                 <span class="scan-pill">📱 SCAN TO PAY</span>
                 <img id="kQr" src="" alt="UPI QR">
                 <div class="qr-label">Scan with any UPI App</div>
@@ -339,6 +339,7 @@
                     <span class="upi-app">Paytm</span>
                     <span class="upi-app">BHIM</span>
                 </div>
+                <div style="font-size: 10px; color: var(--accent); margin-top: 4px; font-weight: 600;">(Demo: Tap QR to simulate payment)</div>
             </div>
 
         </div><!-- /r-body -->
@@ -380,6 +381,29 @@
         const match = data.upi_url.match(/am=([^&]+)/);
         const amt   = match ? match[1] : data.amount;
         document.getElementById('kQr').src = '/qr/' + amt + '?t=' + Date.now();
+    }
+
+    async function simulatePayment() {
+        if (!currentSessionId) return;
+        
+        const pill = document.querySelector('.scan-pill');
+        const originalText = pill.innerText;
+        pill.innerText = "PROCESSING...";
+        pill.style.background = "#f59e0b"; // yellow loading color
+        
+        try {
+            const res = await fetch(`/api/pay/${currentSessionId}`, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                // Instantly trigger poll to show success screen
+                pollSession();
+            }
+        } catch (err) {
+            console.error("Simulation failed", err);
+        } finally {
+            pill.innerText = originalText;
+            pill.style.background = "var(--accent)";
+        }
     }
 
     async function pollSession() {

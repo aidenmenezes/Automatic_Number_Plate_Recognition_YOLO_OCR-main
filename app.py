@@ -3,6 +3,31 @@ import os
 import database
 import qrcode
 from io import BytesIO
+from datetime import datetime, timedelta
+import socket
+
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+def to_ist_string(dt_obj):
+    if not dt_obj:
+        return None
+    if isinstance(dt_obj, str):
+        try:
+            dt_obj = datetime.fromisoformat(dt_obj.replace('Z', '+00:00'))
+        except ValueError:
+            return dt_obj
+    if isinstance(dt_obj, datetime):
+        ist_time = dt_obj + timedelta(hours=5, minutes=30)
+        return ist_time.strftime("%d %b %Y, %I:%M:%S %p IST")
+    return dt_obj
 
 app = Flask(__name__)
 
@@ -63,8 +88,8 @@ def get_active_session():
                 "session_id": sid,
                 "plate": plate,
                 "owner": owner or "Guest",
-                "entry": entry,
-                "exit": exit_t or "---",
+                "entry": to_ist_string(entry),
+                "exit": to_ist_string(exit_t) or "---",
                 "duration": duration or "---",
                 "amount": amount,
                 "upi_url": upi_url
@@ -90,8 +115,8 @@ def api_logs():
         formatted_data.append({
             "plate": log[0],
             "owner": log[1],
-            "entry": log[2],
-            "exit": log[3] or "---",
+            "entry": to_ist_string(log[2]),
+            "exit": to_ist_string(log[3]) or "---",
             "status": ui_status,
             "raw_status": log[4],
             "amount": f"₹{log[5]}" if log[5] > 0 else "---",
@@ -110,7 +135,7 @@ def api_logs():
 
 @app.route("/")
 def index():
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", local_ip=get_local_ip())
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=5000, use_reloader=False)

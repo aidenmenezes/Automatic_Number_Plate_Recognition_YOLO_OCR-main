@@ -84,7 +84,7 @@ def log_exit(plate):
             else:
                 entry_time = entry_time_str
             
-            exit_time = datetime.now()
+            exit_time = datetime.utcnow()
             
             duration_delta = exit_time - entry_time
             hours = duration_delta.total_seconds() / 3600
