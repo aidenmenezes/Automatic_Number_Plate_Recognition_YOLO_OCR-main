@@ -7,35 +7,14 @@ import subprocess
 import platform
 import sys
 
-# Constants
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-CSV_PATH = os.path.join(BASE_PATH, "known_vehicles.csv")
-
 # Detect the file under project root for reliable refresh
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 def get_data_paths():
     date_str = datetime.now().strftime("%Y-%m-%d")
     base_filename = f"detected_plates_{date_str}"
     excel_path = os.path.join(BASE_PATH, f"{base_filename}.xlsx")
     csv_path = os.path.join(BASE_PATH, f"{base_filename}.csv")
     return excel_path, csv_path
-
-# Ensure known vehicles CSV exists
-if not os.path.exists(CSV_PATH):
-    pd.DataFrame(columns=["plate", "owner_name", "category"]).to_csv(CSV_PATH, index=False)
-
-# Save entry to known vehicles CSV
-def save_to_csv(plate, owner_name, category):
-    plate = plate.upper()
-    normalized_plate = plate.replace(" ", "")
-    df = pd.read_csv(CSV_PATH)
-    df['normalized_plate'] = df['plate'].str.replace(" ", "").str.upper()
-    df = df[df['normalized_plate'] != normalized_plate]
-    df = pd.concat([df, pd.DataFrame([{
-        "plate": plate,
-        "owner_name": owner_name,
-        "category": category
-    }])], ignore_index=True)
-    df.drop(columns=["normalized_plate"], errors="ignore").to_csv(CSV_PATH, index=False)
 
 # Load today's Excel file or initialize
 def load_data():
@@ -65,11 +44,11 @@ def run_detection():
         subprocess.Popen([python_exec, "main.py"])
 
 # Streamlit UI Setup 
-st.set_page_config(page_title="ANPR Dashboard", layout="wide")
-st.title("🚗 Automatic Number Plate Recognition Dashboard")
+st.set_page_config(page_title="Smart Parking Dashboard", layout="wide")
+st.title("🚗 Smart Parking Dashboard")
 
-# Tabs layout accorging to steamlit documentation
-tab1, tab2, tab3 = st.tabs(["📷 Detection", "📋 Detected Vehicles", "📝 Manual Entry"])
+# Tabs layout according to streamlit documentation
+tab1, tab2 = st.tabs(["📷 Detection", "📋 Detected Vehicles"])
 
 # --- TAB 1: Detection Control ---
 with tab1:
@@ -109,42 +88,3 @@ with tab2:
         file_label = "⬇️ Download current data file"
         with open(excel_path, "rb") as f:
             st.download_button(file_label, f, file_name=os.path.basename(excel_path))
-
-# --- TAB 3: Manual Entry ---
-with tab3:
-    st.subheader("Add Unknown Vehicle Entry")
-    with st.form("manual_entry_form"):
-        plate_input = st.text_input("Plate Number (as detected)")
-        owner_name = st.text_input("Owner Name")
-        category = st.selectbox("Category", ["visitor", "teacher", "student", "guest"])
-        submit = st.form_submit_button("Add Entry")
-
-        if submit and plate_input:
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            plate_cleaned = plate_input.upper().strip()
-            normalized_input = plate_cleaned.replace(" ", "")
-
-            save_to_csv(plate_cleaned, owner_name, category)
-
-            # Add to Excel if not duplicate
-            df, _ = load_data()
-            df['normalized_check'] = df['Vehicle Number'].astype(str).str.replace(" ", "").str.upper()
-
-            already_exists = ((df["normalized_check"] == normalized_input) & (df["Owner Name"] == owner_name)).any()
-
-            if not already_exists:
-                new_row = {
-                    "Vehicle Number": plate_cleaned,
-                    "Plate Number": plate_cleaned,
-                    "Owner Name": owner_name,
-                    "Timestamp": timestamp,
-                    "Category": category
-                }
-                df = df.drop(columns=["normalized_check"], errors="ignore")
-                df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-                excel_path, csv_path = get_data_paths()
-                df.to_csv(csv_path, index=False)
-                df.to_excel(excel_path, index=False)
-                st.success(f"✅ Entry saved for {plate_cleaned}")
-            else:
-                st.info(f"ℹ️ {plate_cleaned} already exists in today’s records.")

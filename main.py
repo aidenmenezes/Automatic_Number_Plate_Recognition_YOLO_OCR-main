@@ -2,7 +2,6 @@ import torch
 import cv2
 import time
 import os
-import pandas as pd
 from datetime import datetime
 import threading
 from flask import Flask, Response
@@ -14,7 +13,7 @@ from helper.params import Parameters
 from helper.general_utils import filter_text
 import database
 
-# Load parameters, models, and known vehicle data
+# Load parameters and models
 params = Parameters()
 text_reader = easyocr_model_load()
 model, labels = load_yolov5_model()
@@ -45,16 +44,7 @@ def is_valid_plate(plate):
     return bool(re.match(pattern, plate))
 
 def lookup_owner_info(plate):
-    normalized_plate = plate.replace(" ", "").upper()
-    try:
-        v_data = pd.read_csv("known_vehicles.csv")
-        v_data['normalized_plate'] = v_data['plate'].str.replace(" ", "").str.upper()
-        row = v_data[v_data['normalized_plate'] == normalized_plate]
-        if not row.empty:
-            return row.iloc[0]['owner_name'], row.iloc[0]['category']
-    except:
-        pass
-    return "Unknown", "visitor"
+    return "Unknown", "guest"
 
 def camera_loop():
     global latest_frame, display_frame
