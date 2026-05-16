@@ -13,10 +13,24 @@ from helper.params import Parameters
 from helper.general_utils import filter_text
 import database
 
+import numpy as np
+
 # Load parameters and models
 params = Parameters()
-text_reader = easyocr_model_load()
-model, labels = load_yolov5_model()
+text_reader = None
+model = None
+labels = None
+models_loaded = False
+
+def load_ai_models():
+    global text_reader, model, labels, models_loaded
+    print("⏳ Loading AI Models in background...")
+    text_reader = easyocr_model_load()
+    model, labels = load_yolov5_model()
+    models_loaded = True
+    print("✅ AI Models Loaded successfully!")
+
+threading.Thread(target=load_ai_models, daemon=True).start()
 
 # Ensure snapshots directory exists
 SNAPSHOT_DIR = os.path.join("static", "snapshots")
@@ -54,7 +68,10 @@ def camera_loop():
         if ret:
             latest_frame = frame.copy()
             temp_frame = frame.copy()
-            if last_ocr_result:
+            if not models_loaded:
+                cv2.putText(temp_frame, "Loading AI Models...", (20, 80), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 165, 255), 2)
+            elif last_ocr_result:
                 cv2.putText(temp_frame, f"Last: {last_ocr_result}", (20, 40), 
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             display_frame = temp_frame
@@ -67,7 +84,7 @@ def inference_loop():
     last_event_time = {}
 
     while True:
-        if latest_frame is None:
+        if not models_loaded or latest_frame is None:
             time.sleep(0.1)
             continue
 
@@ -128,6 +145,13 @@ def video_feed():
         while True:
             if display_frame is not None:
                 ret, buffer = cv2.imencode('.jpg', display_frame)
+                if ret:
+                    yield (b'--frame\r\n'
+                           b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            else:
+                loading_img = np.zeros((480, 640, 3), dtype=np.uint8)
+                cv2.putText(loading_img, "Starting Camera...", (150, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+                ret, buffer = cv2.imencode('.jpg', loading_img)
                 if ret:
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')

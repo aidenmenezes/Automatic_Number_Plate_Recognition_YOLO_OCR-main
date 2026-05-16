@@ -303,10 +303,22 @@
                     </div>
                 </div>
                 <div class="video-container">
-                    <img src="{{ url_for('video_feed') }}" alt="Live camera preview">
+                    <img id="cameraFeed" src="{{ url_for('video_feed') }}" alt="Live camera preview" onerror="retryImage(this)">
                 </div>
+                <script>
+                    function retryImage(img) {
+                        setTimeout(() => {
+                            let baseUrl = img.src.split('?')[0];
+                            img.src = baseUrl + '?t=' + new Date().getTime();
+                        }, 2000);
+                    }
+                </script>
                 <div class="action-bar">
-                    <a href="{{ url_for('start_detection') }}" class="btn btn-primary pulse">🚀 Activate Automation</a>
+                    {% if not automation_active %}
+                        <a href="{{ url_for('start_detection') }}" class="btn btn-primary pulse">🚀 Activate Automation</a>
+                    {% else %}
+                        <button class="btn btn-primary" disabled style="background: #10b981; border-color: #10b981; opacity: 0.8; cursor: default;">✅ Automation Active</button>
+                    {% endif %}
                 </div>
             </div>
 
