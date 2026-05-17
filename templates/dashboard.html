@@ -43,7 +43,7 @@
                 const res = await fetch(`/api/pay/${currentSessionId}`, { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
-                    alert("✅ Payment Confirmed! Gate is Opening...");
+                    alert(" Payment Confirmed! Gate is Opening...");
                     closeModal();
                     refreshData();
                 }
@@ -217,13 +217,13 @@
         <div class="modal-content glass-panel invoice-modal">
             <button class="close-btn" onclick="closeModal()">&times;</button>
             <div class="invoice-header">
-                <h2>🧾 Bill Summary</h2>
+                <h2> Bill Summary</h2>
                 <p>Operator Confirmation Panel</p>
             </div>
 
             <!-- Kiosk notice -->
             <div class="kiosk-notice">
-                <span class="kiosk-notice-icon">📱</span>
+                <span class="kiosk-notice-icon"></span>
                 <div>
                     <strong>Customer is paying on the mobile kiosk.</strong>
                     <small>UPI QR is displayed on the kiosk screen.</small>
@@ -241,9 +241,9 @@
                 <strong id="modalAmount"></strong>
             </div>
 
-            <p class="auto-hint">⚡ Gate opens automatically once payment is received.<br>Or confirm manually below if customer paid in cash.</p>
+            <p class="auto-hint"> Gate opens automatically once payment is received.<br>Or confirm manually below if customer paid in cash.</p>
 
-            <button class="btn btn-primary btn-block" onclick="confirmPayment()">✅ Manually Confirm &amp; Open Gate</button>
+            <button class="btn btn-primary btn-block" onclick="confirmPayment()"> Manually Confirm &amp; Open Gate</button>
         </div>
     </div>
 
@@ -260,7 +260,7 @@
     <div class="app-container">
         <!-- Kiosk URL Banner -->
         <div class="kiosk-banner">
-            <span class="kiosk-banner-icon">📱</span>
+            <span class="kiosk-banner-icon"></span>
             <span>Mobile Kiosk URL &rarr;</span>
             <code id="kioskUrl" onclick="copyKioskUrl(this)" title="Click to copy">loading…</code>
             <button class="kiosk-copy-btn" onclick="copyKioskUrl(document.getElementById('kioskUrl'))">Copy</button>
@@ -269,7 +269,7 @@
 
         <header class="topbar glass-panel">
             <div class="brand">
-                <h1>🅿️ Smart Parking Pro</h1>
+                <h1>Smart Parking Automation</h1>
                 <p>Fully Automated Security &amp; Billing</p>
             </div>
             <div class="status-card">
@@ -290,8 +290,8 @@
 
         <main class="main-content glass-panel">
             <div class="tabs">
-                <button class="tablinks active" onclick="openTab(event, 'Detection')">📷 Gate Monitor</button>
-                <button class="tablinks" onclick="openTab(event, 'Records')">📊 Activity Logs</button>
+                <button class="tablinks active" onclick="openTab(event, 'Detection')"> Gate Monitor</button>
+                <button class="tablinks" onclick="openTab(event, 'Records')"> Activity Logs</button>
             </div>
 
             <!-- Tab 1: Monitoring -->
@@ -315,7 +315,7 @@
                 </script>
                 <div class="action-bar">
                     {% if not automation_active %}
-                        <a href="{{ url_for('start_detection') }}" class="btn btn-primary pulse">🚀 Activate Automation</a>
+                        <a href="{{ url_for('start_detection') }}" class="btn btn-primary pulse"> Activate Automation</a>
                     {% else %}
                         <button class="btn btn-primary" disabled style="background: #10b981; border-color: #10b981; opacity: 0.8; cursor: default;">✅ Automation Active</button>
                     {% endif %}
