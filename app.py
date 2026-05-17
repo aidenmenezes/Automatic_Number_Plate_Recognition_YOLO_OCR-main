@@ -212,17 +212,26 @@ def get_qr(amount):
 
 @app.route("/api/pay/<int:session_id>", methods=["POST"])
 def pay_session(session_id):
-    database.mark_as_paid(session_id)
-    # Clear kiosk if this session was active
-    if _active_kiosk_session["session_id"] == session_id:
-        _active_kiosk_session["session_id"] = None
-    return jsonify({"success": True, "message": "Payment confirmed, gate opening..."})
+    try:
+        database.mark_as_paid(session_id)
+        # Clear kiosk if this session was active
+        if _active_kiosk_session["session_id"] == session_id:
+            _active_kiosk_session["session_id"] = None
+        return jsonify({"success": True, "message": "Payment confirmed, gate opening..."})
+    except Exception as e:
+        print(f"[DB ERROR] pay_session: {e}")
+        return jsonify({"success": False, "message": "Payment failed: database unavailable."}), 503
 
 # --- Mobile Kiosk: set / get active session ---
 @app.route("/api/active_session", methods=["GET"])
 def get_active_session():
     """Returns the latest unpaid session for the mobile kiosk to display."""
-    logs = database.get_all_logs()
+    try:
+        logs = database.get_all_logs()
+    except Exception as e:
+        print(f"[DB ERROR] get_active_session: {e}")
+        return jsonify({"found": False, "error": "Database unavailable."}), 503
+
     for log in logs:
         plate, owner, entry, exit_t, status, amount, duration, image, sid = log
         if status == 'unpaid':
@@ -248,8 +257,18 @@ def kiosk():
 
 @app.route("/api/logs")
 def api_logs():
-    logs = database.get_all_logs()
-    occupied, revenue = database.get_parking_stats()
+    try:
+        logs = database.get_all_logs()
+        occupied, revenue = database.get_parking_stats()
+    except Exception as e:
+        print(f"[DB ERROR] api_logs: {e}")
+        return jsonify({
+            "logs": [],
+            "occupied": 0,
+            "available": TOTAL_SLOTS,
+            "revenue": "₹0",
+            "error": "Database unavailable."
+        }), 503
     
     formatted_data = []
     for log in logs:

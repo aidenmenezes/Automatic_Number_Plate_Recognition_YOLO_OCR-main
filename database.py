@@ -1,5 +1,5 @@
 import psycopg2
-from psycopg2 import pool
+from psycopg2 import pool, OperationalError, InterfaceError
 from datetime import datetime
 import os
 from dotenv import load_dotenv
@@ -13,20 +13,62 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable is not set. Please configure your Neon DB connection string.")
 
+connection_pool = None
+
+
+def init_connection_pool():
+    """Initialize or recreate the database connection pool."""
+    global connection_pool
+    if connection_pool is not None:
+        try:
+            connection_pool.closeall()
+        except Exception:
+            pass
+        connection_pool = None
+
+    connection_pool = psycopg2.pool.SimpleConnectionPool(1, 20, DATABASE_URL)
+
+
 # Create connection pool for better performance
 try:
-    connection_pool = psycopg2.pool.SimpleConnectionPool(1, 20, DATABASE_URL)
+    init_connection_pool()
 except Exception as e:
-    raise Exception(f"Failed to create connection pool: {e}")
+    connection_pool = None
+    print(f"Warning: Failed to initialize database connection pool: {e}")
+
 
 def get_connection():
     """Get a connection from the pool"""
-    return connection_pool.getconn()
+    global connection_pool
+    if connection_pool is None:
+        init_connection_pool()
+
+    try:
+        return connection_pool.getconn()
+    except (pool.PoolError, OperationalError, InterfaceError):
+        init_connection_pool()
+        return connection_pool.getconn()
+
+
+def close_connection(conn):
+    """Close a broken or dead connection."""
+    if conn:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
 
 def return_connection(conn):
     """Return a connection to the pool"""
     if conn:
-        connection_pool.putconn(conn)
+        try:
+            if conn.closed or connection_pool is None:
+                close_connection(conn)
+            else:
+                connection_pool.putconn(conn)
+        except Exception:
+            close_connection(conn)
 
 def init_db():
     """Initialize the database schema"""
